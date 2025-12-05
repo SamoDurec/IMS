@@ -1,0 +1,12 @@
+# Kompilované binárky
+ski_sim
+
+# Object súbory
+*.o
+*.h
+*.a
+
+# Zálohy, dočasné súbory
+*.swp
+*.tmp
+*.log
