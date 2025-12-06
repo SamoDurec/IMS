@@ -1,0 +1,31 @@
+https://github.com/vmasek/IMS-project/blob/master/data.cpp
+
+
+TODO - sanca ze padne ak poma, TODO znacky v kode, pouzitie Store pre sedacky na lanovke, napojit generator a main -> sledovanie statistik. Data pre dni podla clankov, mozno viacero zjazdoviek tak ako v ski mlynky kde je iba cervena a cierna, ????parkovisko???, parametre svahu, lanoviek na vstup?, prestavky?
+
+
+pozicovna lyzi?
+viacero zjazdoviek tym padom aj lanoviek?
+
+sanca ze spadne pri nastupe ak kotva?
+
+https://www.sciencedirect.com/science/article/pii/S0165232X24002519?utm_source=chatgpt.com
+
+
+
+
+Ski traffic - https://www.sciencedirect.com/science/article/pii/S0165232X24002519?utm_source=chatgpt.com
+
+Rychlost lyziarov - https://arxiv.org/pdf/2011.11976
+Zjednotená stredná hodnota (Priemer): 3.31 ms
+rozptyl 10.95 ms
+Skier behavior - https://www.sciencedirect.com/science/article/abs/pii/S0261517712000581?utm_source=chatgpt.com
+
+Kedy sa najviac lyzuju - https://www.sciencedirect.com/science/article/pii/S0165232X24002519?utm_source=chatgpt.com
+
+
+Celkovy Cas straveny na svahu (average skier spends) - https://wifitalents.com/skiing-statistics/?utm_source=chatgpt.com
+
+
+Mozne strediska - https://skimlynky.eu/?utm_source=chatgpt.com
+		- 
