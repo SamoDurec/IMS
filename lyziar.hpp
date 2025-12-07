@@ -15,6 +15,9 @@ extern Histogram hist_wait_lift;
 extern Stat stat_wait_lift;
 extern Stat stat_lift_queue_length;
 extern Stat stat_wait_ticket;
+extern Stat stat_lyziari_v_systeme;
+extern Stat stat_cas_na_svahu;
+extern Stat stat_rental_queue_length;
 extern const double jedna_cesta;
 
 class Skier : public Process {

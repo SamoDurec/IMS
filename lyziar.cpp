@@ -20,18 +20,27 @@ Stat stat_wait_lift("Statistika cakania na lanovku");
 Stat stat_lift_queue_length("Velkost radu na lanovku");
 Facility ski_lift("Lanovka");
 
-Store equipment_store("Sklad lyziarskeho vybavenia", 50); // Kapacita skladu 50 jednotiek vybavenia TODO
-Store Kotvy("Sklad kotiev", 100); // TODO
+Stat stat_lyziari_v_systeme("Pocet lyziarov v systeme");
+Stat stat_cas_na_svahu("Statistika casu jazdy na svahu");
+Stat stat_rental_queue_length("Velkost radu na vypozicovni");
+int lyziari_v_systeme = 0;
+
+Store equipment_store("Sklad lyziarskeho vybavenia", 50); // Kapacita skladu 50 jednotiek vybavenia
+Store Kotvy("Sklad kotiev", 85); // Kapacita skladu kotiev 85 jednotiek
 
 const double jedna_cesta = 780.0/3.5/60.0; 
 
 Skier::Skier() {
     Activate();
 
-    hasOwnEquipment = (Random() < 0.7); // TODO
+    hasOwnEquipment = (Random() < 0.7); 
     startTime = Time;
     wait_start_lift = 0.0;
-    durationOfStay = Normal(240.0, 90.0);
+    if(Random() < 0.2) {
+        durationOfStay = Uniform(360.0, 480.0); 
+    } else {
+        durationOfStay = Normal(180.0, 90.0);
+    }
     if (durationOfStay < 30.0) {
         durationOfStay = 30.0;
     }
@@ -39,10 +48,14 @@ Skier::Skier() {
 }
 
 void Skier::Behavior() {
-    
-    // Prichod k pokladni
-    //HandleTicket();
-    HandleTicket();
+
+    if (hasOwnEquipment) {
+        // Pokračovanie na lanovku
+        HandleTicket();
+    } else {
+        // Pokračovanie do vypožičovne
+        HandleRental();
+    }  
     
 }
 
@@ -76,40 +89,34 @@ void Skier::HandleTicket() {
 
     // Aktivacia dalsieho lyziara v rade
     ActivateQueue(ticket_queue);
+
+    lyziari_v_systeme++;
+    stat_lyziari_v_systeme(lyziari_v_systeme);
     
-    if (hasOwnEquipment) {
-        // Pokračovanie na lanovku
-        HandleLift();
-    } else {
-        // Pokračovanie do vypožičovne
-        HandleRental();
-    }   
+    HandleLift(); 
 }
 
 void Skier::HandleRental() {
     // Cakanie v rade na vypozicovanie vybavenia
     if( rental_counter.Busy() ) {
         rental_queue.Insert(this);
+        stat_rental_queue_length(rental_queue.Length());
         this->Passivate();
     }
-     
+
     // Obsluha vo vypozicovni
     Seize(rental_counter);
-    // Skontrolovať sklad
-    if(equipment_store.Capacity() > 0) {
-        Enter(equipment_store);   // zoberie 1 jednotku
-        Wait(Uniform(5, 15)); // simulácia vybavenia
-    } else {
-        // sklad je prázdny, lyžiar čaká
-        Wait(Uniform(1, 3)); // krátke čakanie a pokus znova TODO mozno dat sancu ze bude cakat pokial nepride
-        Release(rental_counter);
-        Activate(); // opätovná aktivácia lyžiara
-        return;
-    }
+
+    // Počkaj, kým bude vybavenie dostupné (automaticky čaká, ak nie je)
+    Enter(equipment_store);   // zoberie 1 jednotku
+    Wait(Uniform(5, 15)); // simulácia vybavenia
+
     Release(rental_counter);
 
     // Aktivacia dalsieho lyziara v rade
     ActivateQueue(rental_queue);
+
+    stat_rental_queue_length(rental_queue.Length());
 
     // Pokracovanie na lanovku
     HandleLift();
@@ -119,6 +126,7 @@ void Skier::HandleRental() {
 void Skier::HandleLift() {
     double startWait = Time;
 
+    //std::cout << "Lyziar " << this << " prichadza na lanovku v case " << Time << std::endl;
     // Cakanie v rade na lanovku
     if( ski_lift.Busy() ) {
         wait_start_lift = Time;
@@ -135,11 +143,11 @@ void Skier::HandleLift() {
      
     // Jazda na lanovke
     Seize(ski_lift);
-    Wait(Uniform(3, 7)); // Simulacia jazdy na lanovke TODO + lanovka sa vracia dole
     while (1){
         Enter(Kotvy, 1);
+        Wait(0.25); // kratka doba na nastupenie
         if (Random()<=0.05) {
-        // nezdareny start
+            // nezdareny start
             (new KotvaBezi(2))->Activate();
         
         } else {
@@ -151,6 +159,8 @@ void Skier::HandleLift() {
 
     Wait(jedna_cesta);
     //dobaCesty(Time-time);
+    
+    // Kotva ide spat dole
     (new KotvaBezi(1))->Activate();
 
     // Aktivacia dalsieho lyziara v rade
@@ -165,33 +175,46 @@ void Skier::HandleLift() {
 
 
 void Skier::HandleSlope() {
-    // Jazda na svahu
+    double start = Time;
+    // Výber svahu
+    double lenghtOfSlope;
+    double r = Random();
+    if (r < 0.4) {
+        lenghtOfSlope = 1000; // 40% šanca cervena zjazdovka
+    } else if (r < 0.75) {
+        lenghtOfSlope = 850;  // 35% šanca cervena zjazdovka
+    } else {
+        lenghtOfSlope = 700;  // 25% šanca cierna zjazdovka
+    }
+
     double speed = Normal(3.31, 10.95); // ms-1
     if (speed < 0.5)
-        speed = 0.5; // minimalna rychlost
-    double lenghtOfSlope = 1000; // m TODO mozno dat ako vstup parameter
-    double timeOnSlope = lenghtOfSlope / speed;
-    Wait(timeOnSlope/60); // Simulacia jazdy na svahu
+        speed = Uniform(0.5, 1.0); // minimalna rychlost
+    double timeOnSlope = lenghtOfSlope / speed / 60.0; // premena na minuty
+    Wait(timeOnSlope); // Simulacia jazdy na svahu
+    double cas_jazdy = Time - start;
+    stat_cas_na_svahu(cas_jazdy);
 
     if (Time - startTime >= durationOfStay) {
         if ( hasOwnEquipment == false ){
             Leave(equipment_store); // Vratenie jednotky vybavenia
         }
+        lyziari_v_systeme--;
+        stat_lyziari_v_systeme(lyziari_v_systeme);
         return;
     } else {
+        if (Random() < 0.3) {
+            Wait(Uniform(5.0, 10.0)); // pauza na oddych/jedlo
+        }
         HandleLift();
     }
-
-
-    // Rozhodnutie ci pauza TODO
-
 }
 
 
 
 KotvaBezi::KotvaBezi(int t) : Process() {
     T = t;
-    Activate(); // aktivuj proces hneď po vytvorení (rovnako ako Skier)
+    Activate(); // aktivuj proces hneď po vytvorení
 }
 
 void KotvaBezi::Behavior() {
@@ -199,5 +222,4 @@ void KotvaBezi::Behavior() {
     Wait(jedna_cesta * T);
     // po dokončení cesty vrátime kotvu do skladu (uvolníme 1 jednotku)
     Leave(Kotvy, 1);
-    // process končí automaticky pri návrate z Behavior()
 }

@@ -14,6 +14,11 @@ public:
     Generator(int total) : N_total(total) { Activate(); }
 
     void Behavior() {
+        if (generated >= N_total) {
+            return;
+        }
+        
+
         double time = Time;
         double interval;
         int N1 = 0.55 * N_total; // počet lyžiarov prichádzajúcich v prvých 3 hodinach
@@ -28,11 +33,14 @@ public:
 
         // vytvor lyžiara
         (new Skier())->Activate();
+        generated++;
 
         // aktivuj ďalšieho lyžiara
+        if (generated < N_total)
         Activate(Time + Exponential(interval));
     }
 
 private:
     int N_total;
+    int generated = 0;
 };

@@ -1,8 +1,9 @@
 https://github.com/vmasek/IMS-project/blob/master/data.cpp
 
 
-TODO - sanca ze padne ak poma, TODO znacky v kode, pouzitie Store pre sedacky na lanovke, napojit generator a main -> sledovanie statistik. Data pre dni podla clankov, mozno viacero zjazdoviek tak ako v ski mlynky kde je iba cervena a cierna, ????parkovisko???, parametre svahu, lanoviek na vstup?, prestavky?
+TODO - TODO znacky v kode, mozno viacero zjazdoviek tak ako v ski mlynky kde je iba cervena a cierna, ????parkovisko???, parametre svahu, lanoviek na vstup?, prestavky?
 
+TODO - mozno rychlost lyziarov je moc mala? 30 minut na kilometer je dost
 
 pozicovna lyzi?
 viacero zjazdoviek tym padom aj lanoviek?

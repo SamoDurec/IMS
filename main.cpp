@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
     if (argc >= 4) slope_len = atof(argv[3]);
 
    
-
+    RandomSeed(time(0)); 
     // inicializácia simulačného času
     Init(0.0, sim_end);
 
@@ -36,6 +36,9 @@ int main(int argc, char **argv) {
     ticket_counter.Output();
     rental_counter.Output();
     ski_lift.Output();
+    stat_lyziari_v_systeme.Output();
+    stat_cas_na_svahu.Output();
+    stat_rental_queue_length.Output();
     //equipment_store.Output();
 
     return 0;
