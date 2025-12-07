@@ -22,7 +22,8 @@ Facility ski_lift("Lanovka");
 
 Store equipment_store("Sklad lyziarskeho vybavenia", 50); // Kapacita skladu 50 jednotiek vybavenia TODO
 Store Kotvy("Sklad kotiev", 100); // TODO
-;
+
+const double jedna_cesta = 780.0/3.5/60.0; 
 
 Skier::Skier() {
     Activate();
@@ -126,13 +127,6 @@ void Skier::HandleLift() {
         this->Passivate();
     }
 
-    // // Zistime dobu cakania
-    // if (wait_start_lift > 0.0) {
-    //     double waiting = Time - wait_start_lift;
-    //     hist_wait_lift(waiting);
-    //     stat_wait_lift(waiting);
-    //     wait_start_lift = 0.0;
-    // }
 
     // Doba cakania
     double waiting = Time - startWait;
@@ -142,7 +136,22 @@ void Skier::HandleLift() {
     // Jazda na lanovke
     Seize(ski_lift);
     Wait(Uniform(3, 7)); // Simulacia jazdy na lanovke TODO + lanovka sa vracia dole
+    while (1){
+        Enter(Kotvy, 1);
+        if (Random()<=0.05) {
+        // nezdareny start
+            (new KotvaBezi(2))->Activate();
+        
+        } else {
+            break;
+        }
+    }
+    
     Release(ski_lift);
+
+    Wait(jedna_cesta);
+    //dobaCesty(Time-time);
+    (new KotvaBezi(1))->Activate();
 
     // Aktivacia dalsieho lyziara v rade
     ActivateQueue(lift_queue);
@@ -162,7 +171,7 @@ void Skier::HandleSlope() {
         speed = 0.5; // minimalna rychlost
     double lenghtOfSlope = 1000; // m TODO mozno dat ako vstup parameter
     double timeOnSlope = lenghtOfSlope / speed;
-    Wait(timeOnSlope); // Simulacia jazdy na svahu
+    Wait(timeOnSlope/60); // Simulacia jazdy na svahu
 
     if (Time - startTime >= durationOfStay) {
         if ( hasOwnEquipment == false ){
@@ -176,4 +185,19 @@ void Skier::HandleSlope() {
 
     // Rozhodnutie ci pauza TODO
 
+}
+
+
+
+KotvaBezi::KotvaBezi(int t) : Process() {
+    T = t;
+    Activate(); // aktivuj proces hneď po vytvorení (rovnako ako Skier)
+}
+
+void KotvaBezi::Behavior() {
+    // jedna_cesta by mala byť definovaná globálne (čas jednej cesty v minútach)
+    Wait(jedna_cesta * T);
+    // po dokončení cesty vrátime kotvu do skladu (uvolníme 1 jednotku)
+    Leave(Kotvy, 1);
+    // process končí automaticky pri návrate z Behavior()
 }
