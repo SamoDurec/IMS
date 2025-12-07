@@ -15,6 +15,7 @@ extern Histogram hist_wait_lift;
 extern Stat stat_wait_lift;
 extern Stat stat_lift_queue_length;
 extern Stat stat_wait_ticket;
+extern const double jedna_cesta;
 
 class Skier : public Process {
     private:
@@ -35,4 +36,12 @@ class Skier : public Process {
         void HandleSlope();
 };
 
+
+class KotvaBezi : public Process {
+public:
+    KotvaBezi(int t);        // konštruktor
+    void Behavior() override; // správanie procesu
+private:
+    int T; // T=1 - jedna cesta, T=2 - cesta tam a zpet
+};
 #endif
