@@ -1,7 +1,7 @@
 https://github.com/vmasek/IMS-project/blob/master/data.cpp
 
 
-TODO - TODO znacky v kode, mozno viacero zjazdoviek tak ako v ski mlynky kde je iba cervena a cierna, ????parkovisko???, parametre svahu, lanoviek na vstup?, prestavky?
+TODO - TODO znacky v kode, mozno viacero zjazdoviek tak ako v ski mlynky kde je iba cervena a cierna, parametre svahu, lanoviek na vstup?, prestavky?
 
 TODO - mozno rychlost lyziarov je moc mala? 30 minut na kilometer je dost
 

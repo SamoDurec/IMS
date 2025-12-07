@@ -4,20 +4,25 @@
 #include <iostream>
 #include <simlib.h>
 
-extern Queue ticket_queue;
-extern Facility ticket_counter;
-extern Queue rental_queue;
-extern Facility rental_counter;
-extern Queue lift_queue;
-extern Facility ski_lift;
-extern Queue queue_lift;
-extern Histogram hist_wait_lift;
-extern Stat stat_wait_lift;
-extern Stat stat_lift_queue_length;
-extern Stat stat_wait_ticket;
+// Extern polia ukazovateľov
+extern Queue** ticket_queues;
+extern Facility** ticket_counters;
+extern Stat** stat_wait_ticket;
+
+extern Queue** rental_queues;
+extern Facility** rental_counters;
+extern Stat** stat_rental_queue_length;
+
+extern Queue** lift_queues;
+extern Facility** ski_lifts;
+extern Stat** stat_lift_queue_length;
+extern Stat** stat_wait_lift;
+
 extern Stat stat_lyziari_v_systeme;
 extern Stat stat_cas_na_svahu;
-extern Stat stat_rental_queue_length;
+extern int lyziari_v_systeme;
+extern Store equipment_store;
+extern Store Kotvy;
 extern const double jedna_cesta;
 
 class Skier : public Process {
@@ -27,24 +32,22 @@ class Skier : public Process {
         double durationOfStay;
         double wait_start_lift;
 
-
     public:
         Skier();
 
         void Behavior();
-        void ActivateQueue(Queue &queue);
+        void ActivateQueue(Queue *queue);
         void HandleTicket();
         void HandleRental();
         void HandleLift();
         void HandleSlope();
 };
 
-
 class KotvaBezi : public Process {
 public:
-    KotvaBezi(int t);        // konštruktor
-    void Behavior() override; // správanie procesu
+    KotvaBezi(int t);
+    void Behavior() override;
 private:
-    int T; // T=1 - jedna cesta, T=2 - cesta tam a zpet
+    int T;
 };
 #endif
