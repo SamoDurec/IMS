@@ -1,11 +1,11 @@
 /**
  * IMS projekt 2025 - 04 - Model služeb v oblasti sport
  * Matej Menich (xmenicm00)
- * Samuel Durec ()
+ * Samuel Durec (xdurecs00)
  * */
 
 #include <simlib.h>
-#include "generator.h"
+//#include "generator.h"
 #include "lyziar.hpp"
 
 

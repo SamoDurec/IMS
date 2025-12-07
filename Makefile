@@ -1,11 +1,11 @@
 CXX = g++
 CXXFLAGS = -std=c++11 -Wall -I. -I/Users/samueldurec/Downloads/simlib/src
 
-# Linkujeme priamo statickú knižnicu
+
 LDFLAGS = /Users/samueldurec/Downloads/simlib/src/simlib.a
 
 TARGET = ski_sim
-SOURCES = main.cpp skier.cpp
+SOURCES = lyziar.cpp generator.cpp main.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
 
 all: $(TARGET)

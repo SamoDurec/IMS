@@ -1,29 +1,35 @@
 /**
  * IMS projekt 2025 - 04 - Model služeb v oblasti sport
  * Matej Menich (xmenicm00)
- * Samuel Durec ()
+ * Samuel Durec (xdurecs00)
  *  */ 
 
 
-#include "lyziar.hpp"
+#include "lyziar.hpp" 
 
 Queue ticket_queue("Rada na pokladnu");
 Facility ticket_counter("Pokladna");
+Stat stat_wait_ticket("Statistika cakania na pokladnu");
 
 Queue rental_queue("Rada na vypozicanie vybavenia");
 Facility rental_counter("Vypozicovna");
 
 Queue lift_queue("Rada na lanovku");
+Histogram hist_wait_lift("Cakanie na lanovku", 0.0, 1.0, 100);
+Stat stat_wait_lift("Statistika cakania na lanovku");
+Stat stat_lift_queue_length("Velkost radu na lanovku");
 Facility ski_lift("Lanovka");
 
 Store equipment_store("Sklad lyziarskeho vybavenia", 50); // Kapacita skladu 50 jednotiek vybavenia TODO
-Store Kotvy("Sklad kotiev", 30); // TODO
+Store Kotvy("Sklad kotiev", 100); // TODO
+;
 
 Skier::Skier() {
     Activate();
 
     hasOwnEquipment = (Random() < 0.7); // TODO
     startTime = Time;
+    wait_start_lift = 0.0;
     durationOfStay = Normal(240.0, 90.0);
     if (durationOfStay < 30.0) {
         durationOfStay = 30.0;
@@ -34,8 +40,8 @@ Skier::Skier() {
 void Skier::Behavior() {
     
     // Prichod k pokladni
-    HandleTicket();
-
+    //HandleTicket();
+    HandlerTicket();
     
 }
 
@@ -48,12 +54,18 @@ void Skier::ActivateQueue(Queue &queue) {
     skier->Activate();
 }
 
-void Skier::HandleTicket() {
+//void Skier::HandleTicket() {
+void Skier::HandlerTicket() {
+    double startWait = Time;
     // Cakanie v rade na pokladnu
     if( ticket_counter.Busy() ) {
         ticket_queue.Insert(this);
         this->Passivate();
     }
+
+    // Záznam čakania do histogramu a štatistiky
+    double waiting = Time - startWait;
+    stat_wait_ticket(waiting);
      
     // Obsluha na pokladni
     Seize(ticket_counter);
@@ -64,7 +76,7 @@ void Skier::HandleTicket() {
     // Aktivacia dalsieho lyziara v rade
     ActivateQueue(ticket_queue);
     
-    if (HasOwnEquipment) {
+    if (hasOwnEquipment) {
         // Pokracovanie na lanovku
         HandleLift();
     } else {
@@ -104,11 +116,28 @@ void Skier::HandleRental() {
 
 
 void Skier::HandleLift() {
+    double startWait = Time;
+
     // Cakanie v rade na lanovku
     if( ski_lift.Busy() ) {
+        wait_start_lift = Time;
         lift_queue.Insert(this);
+        stat_lift_queue_length(lift_queue.Length());
         this->Passivate();
     }
+
+    // // Zistime dobu cakania
+    // if (wait_start_lift > 0.0) {
+    //     double waiting = Time - wait_start_lift;
+    //     hist_wait_lift(waiting);
+    //     stat_wait_lift(waiting);
+    //     wait_start_lift = 0.0;
+    // }
+
+    // Doba cakania
+    double waiting = Time - startWait;
+    hist_wait_lift(waiting);
+    stat_wait_lift(waiting);
      
     // Jazda na lanovke
     Seize(ski_lift);
@@ -117,6 +146,9 @@ void Skier::HandleLift() {
 
     // Aktivacia dalsieho lyziara v rade
     ActivateQueue(lift_queue);
+
+    // Aktualizuj štatistiku veľkosti fronty po odchode
+    stat_lift_queue_length(lift_queue.Length());
 
     // Pokracovanie na svah
     HandleSlope();
