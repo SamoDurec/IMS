@@ -1,8 +1,8 @@
 CXX = g++
-CXXFLAGS = -std=c++11 -Wall -I. -I/Users/samueldurec/Downloads/simlib/src
+CXXFLAGS = -std=c++11 -Wall -I/usr/local/include
 
-
-LDFLAGS = /Users/samueldurec/Downloads/simlib/src/simlib.a
+# Linkujeme priamo statickú knižnicu
+LDFLAGS = -L/usr/local/lib -lsimlib -lm
 
 TARGET = ski_sim
 SOURCES = lyziar.cpp generator.cpp main.cpp

@@ -41,7 +41,7 @@ void Skier::Behavior() {
     
     // Prichod k pokladni
     //HandleTicket();
-    HandlerTicket();
+    HandleTicket();
     
 }
 
@@ -55,7 +55,7 @@ void Skier::ActivateQueue(Queue &queue) {
 }
 
 //void Skier::HandleTicket() {
-void Skier::HandlerTicket() {
+void Skier::HandleTicket() {
     double startWait = Time;
     // Cakanie v rade na pokladnu
     if( ticket_counter.Busy() ) {
@@ -77,10 +77,10 @@ void Skier::HandlerTicket() {
     ActivateQueue(ticket_queue);
     
     if (hasOwnEquipment) {
-        // Pokracovanie na lanovku
+        // Pokračovanie na lanovku
         HandleLift();
     } else {
-        // Pokracovanie do vypozicovne
+        // Pokračovanie do vypožičovne
         HandleRental();
     }   
 }

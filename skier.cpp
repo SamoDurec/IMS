@@ -10,7 +10,6 @@ int Skier::nextId() {
 }
 
 Skier::Skier(
-    Store *parking,
     Store *ticketOffice,
     Store *rentalShop,
     Store *liftQueue,
@@ -29,7 +28,6 @@ Skier::Skier(
     int maxRides,
     double probabilityOwnEquipment
 ) :
-    parking_(parking),
     ticketOffice_(ticketOffice),
     rentalShop_(rentalShop),
     liftQueue_(liftQueue),
@@ -49,20 +47,14 @@ Skier::Skier(
     probabilityOwnEquipment_(probabilityOwnEquipment),
     id_(nextId())
 {
-    arrivalTime_ = Time; // Uloženie času príchodu
+    arrivalTime = Time; // Uloženie času príchodu
 }
 
 void Skier::Behavior() {
-    // 1. PARKOVANIE
-    parking_->Enter(this, 1); 
-    double parkingDuration = parkingSampler_();
-    Wait(parkingDuration);
-    if (parkingStat_) (*parkingStat_)(parkingDuration);
-    parking_->Leave(1);
     
     // 2. NÁKUP LÍSTKU
-    ticketOffice_->Enter(this, 1);
-    double ticketDuration = ticketSampler_();
+    ticketOffice->Enter(this, 1);
+    double ticketDuration = ticketSampler();
     Wait(ticketDuration);
     if (ticketStat_) (*ticketStat_)(ticketDuration);
     ticketOffice_->Leave(1);

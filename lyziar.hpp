@@ -29,7 +29,7 @@ class Skier : public Process {
 
         void Behavior();
         void ActivateQueue(Queue &queue);
-        void HandlerTicket();
+        void HandleTicket();
         void HandleRental();
         void HandleLift();
         void HandleSlope();
